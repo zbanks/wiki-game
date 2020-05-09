@@ -7,6 +7,10 @@ Credit to [xer0a](https://zyxyvy.wordpress.com/2019/11/03/fun-wikipedia-activity
 
 ## Contributing 
 
+These are the steps for contributing a puzzle through a pull request, which allows zbanks or others to add the puzzle without being spoiled.
+
+You can also reach out to zbanks directly with a Wikipedia title, and he can add it to the list and give you credit.
+
 ### Adding a Puzzle
 
 Use `wiki_game.py` to append a new puzzle to `puzzles.txt` using a Wikipedia URL. You can optionally name yourself as a contributor for credit.
