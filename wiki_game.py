@@ -20,7 +20,7 @@ DEFAULT_OUTPUT_PATH = BASE_PATH / "docs/index.html"
 DEFAULT_PUZZLE_PATH = BASE_PATH / "puzzles.txt"
 
 ENCODE_KEYS = {"title", "url", "censor"}
-CENSOR_TEXT = "█" * 8 
+CENSOR_TEXT = "█" * 8
 
 
 def puzzle_encode(obj: Puzzle, encode_keys: Optional[Iterable[str]] = None) -> bytes:
@@ -77,6 +77,7 @@ def parse_url(url: str) -> Tuple[str, List[Tuple[str, str]]]:
         links.append((number, text))
     return title, links
 
+
 def apply_censor(text: str, censor: Optional[str]) -> str:
     if censor is None:
         return text
@@ -91,16 +92,18 @@ def generate(puzzle_path: Path, output_path: Path, verbose: bool = False):
         <html>
         <head>
             <style>
+                body {
+                    font-family: sans-serif;
+                }
                 .container {
-                    display: inline-flex;
+                    display: flex;
                     flex-wrap: wrap;
                 }
                 .puzzle {
                     background-color: #f8f9fa;
                     border: 1px solid #a2a9b1;
                     padding: 12px;
-                    font-family: sans-serif;
-                    display: table;
+                    display: inline-table;
                     line-height: 1.6;
                     margin: 1em;
                 }
@@ -123,10 +126,11 @@ def generate(puzzle_path: Path, output_path: Path, verbose: bool = False):
                 li {
                     margin-bottom: 0.1em;
                 }
-                .toctext {
+                .toctext, a, a:visited {
                     color: #0645ad;
+                    text-decoration: none;
                 }
-                .toctext:hover {
+                .toctext:hover, a:hover {
                     text-decoration: underline;
                 }
                 .depth-0 { margin-left: 0em; }
@@ -142,9 +146,14 @@ def generate(puzzle_path: Path, output_path: Path, verbose: bool = False):
         """
         )
         for i, puzzle in enumerate(get_puzzles(puzzle_path)):
+            index = i + 1
             title, contents = parse_url(puzzle["url"])
-            if title in used_titles and verbose:
-                print("Duplicate puzzle: '{}'".format(title))
+            if verbose:
+                print("Generating puzzle #{} '{}'".format(index, title))
+            else:
+                print("Generating puzzle #{}".format(index))
+            if title in used_titles:
+                print("Duplicate puzzle #{}".format(index))
             used_titles.add(title)
 
             censor = puzzle.get("censor")
@@ -152,7 +161,7 @@ def generate(puzzle_path: Path, output_path: Path, verbose: bool = False):
             byline = ", by {}".format(contributor) if contributor is not None else ""
 
             f.write(
-                "<div class='puzzle' title='#{}{}'>".format(i + 1, html.escape(byline))
+                "<div class='puzzle' title='#{}{}'>".format(index, html.escape(byline))
             )
             f.write(
                 " <div class='header'><h2>Contents</h2> [<span class='toctext'>hide</span>]</div>\n"
@@ -171,7 +180,13 @@ def generate(puzzle_path: Path, output_path: Path, verbose: bool = False):
                 f.write("</li>\n")
             f.write(" </ul>\n")
             f.write("</div>\n")
-        f.write("</div></body></html>")
+        f.write("</div>\n")
+        f.write("<div class='puzzle'>\n")
+        f.write(
+            " <a href='https://github.com/zbanks/wiki-game'>Fork me on Github</a>\n"
+        )
+        f.write("</div>\n")
+        f.write("</body></html>\n")
 
 
 def add(
@@ -180,7 +195,7 @@ def add(
     contributor: Optional[str] = None,
     censor: Optional[str] = None,
 ):
-    title, contents = parse_url(url)
+    title, _contents = parse_url(url)
     print("Adding puzzle '{}' to {}".format(title, puzzle_path))
     puzzle = {
         "url": url,
