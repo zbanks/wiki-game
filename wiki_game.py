@@ -161,10 +161,14 @@ def generate(puzzle_path: Path, output_path: Path, verbose: bool = False):
             byline = ", by {}".format(contributor) if contributor is not None else ""
 
             f.write(
-                "<div class='puzzle' title='#{}{}'>".format(index, html.escape(byline))
+                "<div class='puzzle' id='{}' title='#{}{}'>".format(
+                    index, index, html.escape(byline)
+                )
             )
             f.write(
-                " <div class='header'><h2>Contents</h2> [<span class='toctext'>hide</span>]</div>\n"
+                " <div class='header'><h2>Contents</h2> [<a href='#{}'>link</a>]</div>\n".format(
+                    index
+                )
             )
             f.write(" <ul>\n")
             for number, text in contents:
